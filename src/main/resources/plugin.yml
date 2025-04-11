@@ -1,0 +1,10 @@
+name: maceManager
+version: '1.0-SNAPSHOT'
+main: me.sazawa.maceManager.MaceManager
+api-version: '1.21'
+authors: [sazawa]
+description: a plugin to manage event-won maces
+
+permissions:
+  maceManager.bypass:
+    default: op
