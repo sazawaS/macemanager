@@ -8,3 +8,11 @@ description: a plugin to manage event-won maces
 permissions:
   maceManager.bypass:
     default: op
+  maceManager.createMace:
+    default: op
+
+commands:
+  createMace:
+    description: Create a mace with lore.
+    usage: /createMace
+    permission: maceManager.createMace

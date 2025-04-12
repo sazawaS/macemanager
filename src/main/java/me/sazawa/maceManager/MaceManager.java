@@ -1,6 +1,9 @@
 package me.sazawa.maceManager;
 
 import org.bukkit.Material;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -11,15 +14,19 @@ import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
+import java.util.Collections;
+import java.util.List;
 
-public final class MaceManager extends JavaPlugin implements Listener {
+public final class MaceManager extends JavaPlugin implements Listener, CommandExecutor {
 
     @Override
     public void onEnable() {
         getLogger().info("Hello Plugin Started!");
         this.getServer().getPluginManager().registerEvents(this, this);
+        this.getCommand("createMace").setExecutor(this);
     }
 
     @Override
@@ -73,5 +80,24 @@ public final class MaceManager extends JavaPlugin implements Listener {
             }
             event.setCancelled(true);
         }
+    }
+
+    @Override
+    public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String @NotNull [] strings) {
+        if (commandSender instanceof Player sender) {
+            ItemStack newMace = new ItemStack(Material.MACE);
+            newMace.setAmount(1);
+            if (strings.length == 0) {
+                newMace.setLore(Collections.singletonList("This is an event won mace."));
+            } else {
+                String lore = "";
+                for (String string : strings) {
+                    lore = lore + string + " ";
+                }
+                newMace.setLore(List.of(lore));
+            }
+            sender.getInventory().setItemInMainHand(newMace);
+        }
+        return true;
     }
 }
