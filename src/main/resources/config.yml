@@ -1,0 +1,9 @@
+#can the players use non-event maces
+canUseMace: false
+
+#if they cant use non-event mace, what item to replace the mace with
+replace-with: ENCHANTED_GOLDEN_APPLE
+
+#basic configs
+canStoreMace: false
+canDropMace: false

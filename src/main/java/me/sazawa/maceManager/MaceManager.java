@@ -4,6 +4,7 @@ import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -22,9 +23,21 @@ import java.util.List;
 
 public final class MaceManager extends JavaPlugin implements Listener, CommandExecutor {
 
+    FileConfiguration config = this.getConfig();
+
+    @Override
+    public void onLoad() {
+        saveDefaultConfig();
+    }
+
     @Override
     public void onEnable() {
-        getLogger().info("Hello Plugin Started!");
+
+        if (config.getBoolean("canDropMace")) {
+            this.getLogger().info("yes i can drop mace");
+        } else {
+            this.getLogger().info("no i can't drop mace");
+        }
         this.getServer().getPluginManager().registerEvents(this, this);
         this.getCommand("createMace").setExecutor(this);
     }
@@ -38,15 +51,21 @@ public final class MaceManager extends JavaPlugin implements Listener, CommandEx
     public void onAttack(EntityDamageByEntityEvent event) {
         if (event.getDamager() instanceof Player attacker) {
             if (attacker.getInventory().getItemInMainHand().getType() == Material.MACE) {
+                if (config.getBoolean("canUseMace")) {
+                    return;
+                }
                 if (attacker.hasPermission("maceManager.bypass")) {
-                    this.getLogger().info("Player " + attacker.getName() + " used MACE and he is allowed to.");
-                } else
-                {
-                    if (attacker.getInventory().getItemInMainHand().getItemMeta().getLore() == null) {
-                        this.getLogger().info("Player " + attacker.getName() + " used MACE.");
-                        attacker.getInventory().setItemInMainHand(ItemStack.of(Material.ENCHANTED_GOLDEN_APPLE, 1));
-                        attacker.sendMessage("[MaceManager] " + "You cannot use this mace! Only event crafted mace can be used. Your mace was replaced with an egap instead.");
+                    return;
+                }
+
+                if (attacker.getInventory().getItemInMainHand().getItemMeta().getLore() == null) {
+                    this.getLogger().info("Player " + attacker.getName() + " used MACE.");
+                    Material newItem = Material.valueOf(config.getString("replace-with"));
+                    if (newItem == null) {
+                        newItem = Material.ENCHANTED_GOLDEN_APPLE;
                     }
+                    attacker.getInventory().setItemInMainHand(ItemStack.of( newItem, 1));
+                    attacker.sendMessage("[MaceManager] " + "You cannot use this mace! Only event crafted mace can be used. Your mace was replaced with a " + newItem.toString() + " instead.");
                 }
 
             }
@@ -55,6 +74,12 @@ public final class MaceManager extends JavaPlugin implements Listener, CommandEx
 
     @EventHandler
     public void onClick(InventoryClickEvent event) {
+        if (event.getView().getPlayer().hasPermission("maceManager.bypass")) {
+            return;
+        }
+        if (config.getBoolean("canStoreMace")) {
+            return;
+        }
         if(event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) {
             return;
         }
@@ -63,9 +88,6 @@ public final class MaceManager extends JavaPlugin implements Listener, CommandEx
         if ((top.getType() == InventoryType.CHEST || top.getType() == InventoryType.ENDER_CHEST || top.getType() == InventoryType.HOPPER || top.getType() == InventoryType.FURNACE || top.getType() == InventoryType.BARREL || top.getType() == InventoryType.BLAST_FURNACE) && bottom.getType() == InventoryType.PLAYER){
             if (event.getCurrentItem() != null) {
                 if (event.getCurrentItem().getType() == Material.MACE) {
-                    if (event.getView().getPlayer().hasPermission("maceManager.bypass")) {
-                        return;
-                    }
                     event.setCancelled(true);
                 }
             }
@@ -74,10 +96,13 @@ public final class MaceManager extends JavaPlugin implements Listener, CommandEx
 
     @EventHandler
     public void onDrop(PlayerDropItemEvent event) {
+        if (event.getPlayer().hasPermission("maceManager.bypass")) {
+            return;
+        }
+        if (config.getBoolean("canDropMace")) {
+            return;
+        }
         if (event.getItemDrop().getItemStack().getType() == Material.MACE) {
-            if (event.getPlayer().hasPermission("maceManager.bypass")) {
-                return;
-            }
             event.setCancelled(true);
         }
     }
@@ -90,11 +115,11 @@ public final class MaceManager extends JavaPlugin implements Listener, CommandEx
             if (strings.length == 0) {
                 newMace.setLore(Collections.singletonList("This is an event won mace."));
             } else {
-                String lore = "";
+                StringBuilder lore = new StringBuilder();
                 for (String string : strings) {
-                    lore = lore + string + " ";
+                    lore.append(string).append(" ");
                 }
-                newMace.setLore(List.of(lore));
+                newMace.setLore(List.of(lore.toString()));
             }
             sender.getInventory().setItemInMainHand(newMace);
         }
