@@ -80,17 +80,52 @@ public final class MaceManager extends JavaPlugin implements Listener, CommandEx
         if (config.getBoolean("canStoreMace")) {
             return;
         }
-        if(event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) {
-            return;
-        }
+
         Inventory top = event.getView().getTopInventory();
         Inventory bottom = event.getView().getBottomInventory();
-        if ((top.getType() == InventoryType.CHEST || top.getType() == InventoryType.ENDER_CHEST || top.getType() == InventoryType.HOPPER || top.getType() == InventoryType.FURNACE || top.getType() == InventoryType.BARREL || top.getType() == InventoryType.BLAST_FURNACE) && bottom.getType() == InventoryType.PLAYER){
-            if (event.getCurrentItem() != null) {
-                if (event.getCurrentItem().getType() == Material.MACE) {
+
+        this.getLogger().info(top.getType().toString() );
+        if (top.getType() == InventoryType.BARREL ||
+                top.getType() == InventoryType.BEACON ||
+                top.getType() == InventoryType.BLAST_FURNACE ||
+                top.getType() == InventoryType.BREWING ||
+                top.getType() == InventoryType.CARTOGRAPHY ||
+                top.getType() == InventoryType.CHEST ||
+                top.getType() == InventoryType.CHISELED_BOOKSHELF ||
+                top.getType() == InventoryType.COMPOSTER ||
+                top.getType() == InventoryType.CRAFTER ||
+                top.getType() == InventoryType.DECORATED_POT ||
+                top.getType() == InventoryType.DISPENSER ||
+                top.getType() == InventoryType.DROPPER ||
+                top.getType() == InventoryType.ENDER_CHEST ||
+                top.getType() == InventoryType.FURNACE ||
+                top.getType() == InventoryType.GRINDSTONE ||
+                top.getType() == InventoryType.HOPPER ||
+                top.getType() == InventoryType.JUKEBOX ||
+                top.getType() == InventoryType.LECTERN ||
+                top.getType() == InventoryType.LOOM ||
+                top.getType() == InventoryType.MERCHANT ||
+                top.getType() == InventoryType.SHULKER_BOX ||
+                top.getType() == InventoryType.SMITHING ||
+                top.getType() == InventoryType.SMOKER ||
+                top.getType() == InventoryType.STONECUTTER ||
+                top.getType() == InventoryType.WORKBENCH) {
+
+            this.getLogger().info("Top verified ");
+            if (bottom.getType() == InventoryType.PLAYER) {
+                if (event.getCurrentItem().getType() == Material.MACE || event.getCursor().getType() == Material.MACE) {
                     event.setCancelled(true);
                 }
+
+                if (event.getClick().isKeyboardClick()) {
+                    event.setCancelled(true);
+                    this.getLogger().info("Keyboard click, cancling.");
+                }
+
+                this.getLogger().info("Current item" + event.getCurrentItem().toString());
+                this.getLogger().info("Get cursor" + event.getCursor().toString());
             }
+
         }
     }
 
