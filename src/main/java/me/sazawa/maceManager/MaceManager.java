@@ -59,7 +59,6 @@ public final class MaceManager extends JavaPlugin implements Listener, CommandEx
                 }
 
                 if (attacker.getInventory().getItemInMainHand().getItemMeta().getLore() == null) {
-                    this.getLogger().info("Player " + attacker.getName() + " used MACE.");
                     Material newItem = Material.valueOf(config.getString("replace-with"));
                     if (newItem == null) {
                         newItem = Material.ENCHANTED_GOLDEN_APPLE;
@@ -84,7 +83,6 @@ public final class MaceManager extends JavaPlugin implements Listener, CommandEx
         Inventory top = event.getView().getTopInventory();
         Inventory bottom = event.getView().getBottomInventory();
 
-        this.getLogger().info(top.getType().toString() );
         if (top.getType() == InventoryType.BARREL ||
                 top.getType() == InventoryType.BEACON ||
                 top.getType() == InventoryType.BLAST_FURNACE ||
@@ -111,7 +109,6 @@ public final class MaceManager extends JavaPlugin implements Listener, CommandEx
                 top.getType() == InventoryType.STONECUTTER ||
                 top.getType() == InventoryType.WORKBENCH) {
 
-            this.getLogger().info("Top verified ");
             if (bottom.getType() == InventoryType.PLAYER) {
                 if (event.getCurrentItem().getType() == Material.MACE || event.getCursor().getType() == Material.MACE) {
                     event.setCancelled(true);
@@ -119,11 +116,7 @@ public final class MaceManager extends JavaPlugin implements Listener, CommandEx
 
                 if (event.getClick().isKeyboardClick()) {
                     event.setCancelled(true);
-                    this.getLogger().info("Keyboard click, cancling.");
                 }
-
-                this.getLogger().info("Current item" + event.getCurrentItem().toString());
-                this.getLogger().info("Get cursor" + event.getCursor().toString());
             }
 
         }
